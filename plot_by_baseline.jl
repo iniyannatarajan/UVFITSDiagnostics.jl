@@ -71,8 +71,8 @@ The output will be saved to **$(savepath = joinpath(basepath, outdir))**
 	Select data to plot:
 
 	**Band** $(Child("band", Select(["b1", "b2", "b3", "b4"])))
-	**Calibration stage** $(Child("stage", Select(["7.+apriori"])))	
-	**Epoch** $(Child("epoch", Select(["3768"])))
+	**Calibration stage** $(Child("stage", Select(["6.uvfits", "7.+apriori"])))	
+	**Epoch** $(Child("epoch", Select(["3763", "3768"])))
 
 	"""
 end, label="Get sources")
@@ -2048,7 +2048,7 @@ version = "3.5.0+0"
 # ╠═74234e6e-0578-42de-b256-6b2f1e5e2d88
 # ╟─ac3fd50a-095d-4753-a429-203af7d9324b
 # ╟─c5fa4a85-f3a0-4e05-9c10-b2996c67acdb
-# ╟─c9fc5e19-d879-4ab8-9f7d-b78df00fe6c9
+# ╠═c9fc5e19-d879-4ab8-9f7d-b78df00fe6c9
 # ╠═47b4dbd4-18e6-47da-9a26-0931d2325728
 # ╟─381f86b8-be58-4f9a-871c-fe99d915e13c
 # ╠═63bddc36-47be-45f3-b1be-d9f6f5e86d04
