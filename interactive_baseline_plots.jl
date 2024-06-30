@@ -40,7 +40,7 @@ using Statistics
 
 # ╔═╡ b4c5749b-5ebc-420b-81b9-e058c03502b6
 md"""
-# UVFITS diagnostic plots (WIP)
+## UVFITS diagnostic plots by baseline (WIP)
 """
 
 # ╔═╡ 8882ec40-4d87-4547-a483-74bf6dc3d147
