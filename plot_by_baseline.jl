@@ -52,7 +52,7 @@ The data (one uvfits file per source) are assumed to be located at **"<basepath>
 
 # ╔═╡ 74234e6e-0578-42de-b256-6b2f1e5e2d88
 md"""
-Base path to input uvfits files: $(@bind basepath confirm(TextField(default=	"/home/memer/software/dev/UVFITSDiagnostics.jl/data/ehthops-polconverted-r3/ehthops"), label="Submit"))
+Base path to input uvfits files: $(@bind basepath confirm(TextField(), label="Submit"))
 """
 
 # ╔═╡ ac3fd50a-095d-4753-a429-203af7d9324b
@@ -2017,7 +2017,7 @@ version = "3.5.0+0"
 # ╔═╡ Cell order:
 # ╟─b4c5749b-5ebc-420b-81b9-e058c03502b6
 # ╟─8882ec40-4d87-4547-a483-74bf6dc3d147
-# ╟─74234e6e-0578-42de-b256-6b2f1e5e2d88
+# ╠═74234e6e-0578-42de-b256-6b2f1e5e2d88
 # ╟─ac3fd50a-095d-4753-a429-203af7d9324b
 # ╟─c5fa4a85-f3a0-4e05-9c10-b2996c67acdb
 # ╟─c9fc5e19-d879-4ab8-9f7d-b78df00fe6c9
