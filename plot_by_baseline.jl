@@ -160,7 +160,7 @@ end;
 end, label="Generate plots")
 
 # ╔═╡ 172946c7-ecc1-493d-9f50-478f525de654
-function plot_by_baseline(srcdict, stage, epoch, sources, baselines, stokes, xq, yq, savepath)
+function plot_by_baseline(srcdict, band, stage, epoch, sources, baselines, stokes, xq, yq, savepath; unwrap=true, savefig=false)
 	if xq ∉ (:time,)
 		throw(ArgumentError("Invalid value for xq: $xq. Exiting."))
 	end
@@ -173,6 +173,19 @@ function plot_by_baseline(srcdict, stage, epoch, sources, baselines, stokes, xq,
 		mkdir(savepath)
 	end
 
+	# compute zero time
+	if epoch == "3768"
+		zerotime = DateTime(2021,4,18,0,0,0)
+	else
+		zerotime = DateTime(1970,1,1,0,0,0)
+	end
+	zerotimeunix = Dates.datetime2unix(zerotime)
+
+	colordict = Dict()
+	for (n, source) in enumerate(sources)
+		colordict[source] = Cycled(n)
+	end
+	
 	farr = []
 	# loop through baselines and draw an individual figure for each baseline
 	for baseline in baselines
@@ -195,19 +208,28 @@ function plot_by_baseline(srcdict, stage, epoch, sources, baselines, stokes, xq,
 						data = map(v -> rad2deg(angle(v.visibility)), filter(v -> v.stokes ∈ (pp,) && v.baseline.ants_ix == srcdict[source]["baselines"][baseline], srcdict[source]["vistables"]))
 
 						# unwrap phase and centre at zero
-						data = unwrap(data)
-						data = data .- mean(data)
+						if unwrap == true
+							unwrap!(data)
+							data = data .- mean(data)
+						end
 							
 						ax.ylabel = "Phase (deg)"
 					end
-		
+					if isempty(data)
+						throw(ArgumentError(""))
+					end
+
 					# compute the requested xquantity
 					if xq == :time
 						times = map(v -> Dates.datetime2unix(v.datetime), filter(v -> v.stokes ∈ (pp,) && v.baseline.ants_ix == srcdict[source]["baselines"][baseline], srcdict[source]["vistables"]))
-						toff = [round(t-times[1])/(60*60) for t in times]
+						toff = [(t-zerotimeunix)/3600 for t in times]
 
+						if isempty(toff)
+							throw(ArgumentError(""))
+						end
+						
 						if pp == last(stokes)
-							ax.xlabel = "Offset time (hr)"
+							ax.xlabel = "Time offset (hr) from $(zerotime)"
 						end
 					end
 					# set other plotting parameters
@@ -218,14 +240,16 @@ function plot_by_baseline(srcdict, stage, epoch, sources, baselines, stokes, xq,
 					ax.titlesize[] = 20
 					
 					# start plotting
-					pl = scatter!(ax, toff, data, marker='o', label=source)
-					# customize legend
+					pl = scatter!(ax, toff, data, marker='o', label=source, color=colordict[source])
+					# add legend element
 					push!(lgd_els, MarkerElement(color=pl.color, marker='o', markersize=10))
 					# add source to valid list for this baseline
 					push!(valid_sources, source)
 				catch e
 					if isa(e, KeyError)
 						println("Warning: $baseline not found for $source. Skipping...")
+					elseif isa(e, ArgumentError)
+						println("Warning: Empty array for $(pp) for $(source) and $(baseline). Skipping...")
 					else
 						rethrow(e)
 					end
@@ -236,20 +260,24 @@ function plot_by_baseline(srcdict, stage, epoch, sources, baselines, stokes, xq,
 			Legend(f[plotcol,2], lgd_els, valid_sources, labelsize=20)
 		end
 		
-		# make some figure specific customization here
+		# make figure specific customization here
 		Label(f[0,:], "$(baseline[1])-$(baseline[2]) (stage: $(stage), epoch: $(epoch))", fontsize=24, tellwidth=false, tellheight=false)
 		resize_to_layout!(f)
+		
 		# push to farr for display
 		push!(farr, htl"<div>$f</div>")
+		
 		# save to savepath
-		savename = joinpath(savepath, "fig_$(stage)_$(epoch)_$(baseline[1])-$(baseline[2])_$(xq)_vs_$(yq).png")
-		save(savename, f)
+		if savefig == true
+			savename = joinpath(savepath, "fig_$(band)_$(stage)_$(epoch)_$(baseline[1])-$(baseline[2])_$(xq)_vs_$(yq).png")
+			save(savename, f)
+		end
 	end
 	htl"$farr"
 end
 
 # ╔═╡ 63bddc36-47be-45f3-b1be-d9f6f5e86d04
-plot_by_baseline(srcdict, sel.stage, sel.epoch, p.sources, p.baselines, p.stokes, p.xaxis, p.yaxis, savepath)
+plot_by_baseline(srcdict, band, sel.stage, sel.epoch, p.sources, p.baselines, p.stokes, p.xaxis, p.yaxis, savepath, unwrap=true, savefig=false)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
